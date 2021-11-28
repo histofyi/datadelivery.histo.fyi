@@ -1,0 +1,5 @@
+Flask
+Flask-Caching
+zappa
+boto3
+requests
