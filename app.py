@@ -13,7 +13,7 @@ app.config.from_file('config.toml', toml.load)
 
 
 plausible_url = 'https://plausible.io/api/event'
-domain = 'histo.fyi'
+domain = app.config['PLAUSIBLE_DOMAIN']
 
 
 notebooks = {
@@ -42,10 +42,20 @@ plausible_payload = {
 # instantiate providers for the S3 bucket
 s3 = s3Provider(app.config['AWS_ACCESS_KEY_ID'], app.config['AWS_SECRET_KEY'], app.config['AWS_DEFAULT_REGION'])
 
+
+def log_activity(name, url):
+    plausible_payload['name'] = name
+    plausible_payload['url'] = url
+    r = requests.post(plausible_url, data=plausible_payload)
+    if r.status_code == 202:
+        return True
+    else:
+        return False
+
+
 @app.route('/')
 def default_route_handler():
     return "Nothing to see. Move along please..."
-
 
 
 @app.route('/<string:mediatype>/<path:path>')
@@ -58,9 +68,8 @@ def mediatype_handler(mediatype, path):
             data, success, errors = None, False, ['no_matching_file']
             path = '/' + path
         if success:
-            plausible_payload['name'] = 'PDFDownload'
-            plausible_payload['url'] = 'https://data.' + domain + '/' + path
-            r = requests.post(plausible_url, data=plausible_payload)
+            url = 'https://data.' + domain + '/' + path
+            log_activity(mediatypes[mediatype]['plausible_name'], url)
             return redirect('https://static.' + domain + '/' + path)
         else:
             return {'success': success, 'errors':errors, 'path':path}
@@ -75,9 +84,8 @@ def notebook_handler(path):
     else:
         success=False
     if success:
-        plausible_payload['name'] = 'NotebookView'
-        plausible_payload['url'] = 'https://data.' + domain + '/notebooks/' + path
-        r = requests.post(plausible_url, data=plausible_payload)
+        url = 'https://data.' + domain + '/' + path
+        log_activity('NotebookView', url)
         return redirect(notebooks[path]['url'])
     else:
         return {'success': success, 'errors':['file_not_found'], 'path':path}
