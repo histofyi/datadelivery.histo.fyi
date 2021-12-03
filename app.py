@@ -17,8 +17,8 @@ domain = app.config['PLAUSIBLE_DOMAIN']
 
 
 notebooks = {
-    'bsi/2021/nonamer-peptides':{'url':'https://colab.research.google.com/'},
-    'bsi/2021/antigen-binding-cleft':{'url':'https://colab.research.google.com/'}
+    'bsi/2021/nonamer-peptides':{'url':'https://colab.research.google.com/drive/19ie1BrXemR3qW3PAXkwXeygGsHOpHOa3'},
+    'bsi/2021/antigen-binding-cleft':{'url':'https://colab.research.google.com/drive/1jxkzkmWvgTOlYFMIvhLDalxECpN6cEOR'}
 }
 
 
